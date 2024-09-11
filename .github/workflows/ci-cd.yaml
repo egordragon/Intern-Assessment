@@ -23,4 +23,3 @@ jobs:
       - name: Build and test with Docker Compose
         run: |
           docker compose -up build
-
