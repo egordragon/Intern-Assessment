@@ -18,12 +18,9 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Set up Docker Compose
-        run: docker-compose --version
+        run: docker compose --version
 
       - name: Build and test with Docker Compose
         run: |
-          docker-compose -f docker-compose.yaml up -d mongo
-          docker-compose -f docker-compose.yaml build app
-          docker-compose -f docker-compose.yaml run --rm tests
+          docker compose -up build
 
-  # Job 2: Build and Deploy
