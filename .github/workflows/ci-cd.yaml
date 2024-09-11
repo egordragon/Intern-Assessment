@@ -1,0 +1,29 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  # Job 1: Run Tests
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up Docker Compose
+        run: docker-compose --version
+
+      - name: Build and test with Docker Compose
+        run: |
+          docker-compose -f docker-compose.yaml up -d mongo
+          docker-compose -f docker-compose.yaml build app
+          docker-compose -f docker-compose.yaml run --rm tests
+
+  # Job 2: Build and Deploy

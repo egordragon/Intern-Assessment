@@ -1,0 +1,30 @@
+services:
+  app:
+    build:
+      context: . # Build the Flask-based todo app using the current directory as the context
+    depends_on:
+      - mongo # Ensure the 'mongo' service is started before the 'app'
+    environment:
+      FLASK_ENV: production # Set Flask environment variable to 'production'
+    ports:
+      - 3000:3000 # Map port 3000 on the host to port 3000 in the container
+
+  mongo:
+    image: mongo:latest # Use the latest MongoDB image
+    volumes:
+      - database:/data/db # Persist todo items in a mounted volume to retain data across restarts
+    ports:
+      - 27017:27017 # Expose MongoDB on the default port to allow the app to connect
+
+  tests:
+    build:
+      context: . # Build the test environment from the same context as the app
+    environment:
+      PYTHONPATH: /app # Set the Python path to include the 'app' directory for module imports
+    depends_on:
+      - mongo # Ensure mongo starts before running tests
+      - app # Ensure todo app is running before tests are executed
+    command: pytest # Run pytest command to execute tests
+
+volumes:
+  database: # Define a named volume for MongoDB to persist data

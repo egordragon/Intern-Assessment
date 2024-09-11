@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="container m-5 p-2 rounded mx-auto bg-light shadow">
+        
+        <!-- App title section -->
+        <div class="row m-1 p-4">
+            <div class="col">
+                <div class="p-1 h1 text-primary text-center mx-auto display-inline-block">
+                    <article>Todo App</article>
+                </div>
+            </div>
+        </div>
+            <div class="row m-1 p-3">
+                <div class="col col-11 mx-auto">
+                    <form method="POST" action="/" autocomplete="off">
+                        <div class="row m-1 p-3">
+                            <div class="col col-11 mx-auto">
+                                <div class="row bg-white rounded shadow-sm p-2 add-todo-wrapper align-items-center justify-content-center">
+                                    <div class="col">
+                                        <input class="form-control form-control-lg border-0 add-todo-input bg-transparent rounded" type="text" name="task" placeholder="Add new Task">
+                                    </div>
+                                    <div class="col-auto px-0 mx-0 mr-2">
+                                        <button type="submit" class="btn btn-primary">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <hr>
+                    <div class="row">
+                      <div class="col-12">
+                          {% if tasks %}
+                          <ul class="nav flex-column">
+                            {% for todo in tasks %}
+                            <li class="nav-item">
+                                <div class="list-group-item {% if todo.complete %}bg-success text-white{% endif %} d-flex justify-content-between align-items-center py-1">
+                                    <!-- Опис завдання -->
+                                    <div>
+                                        <strong>{{ todo['task'] }}</strong>
+                                        <p class="text-info"><small>{{ todo['created_at'].strftime('%d.%m.%Y %H:%M') }}</small></p>
+                                    </div>
+                        
+                                    <!-- Кнопки дій -->
+                                    <div class="d-flex">
+                                        <!-- Кнопка Complete -->
+                                        <a href="javascript:;" onclick="this.children[0].submit()" class="btn btn-sm btn-success mx-1">
+                                            <form method="POST" action="/toggle-complete/{{ todo['_id'] }}"></form>
+                                            <i class="fa {% if todo.complete %}fa-undo{% else %}fa-check{% endif %}"></i>
+                                        </a>
+                        
+                                        <!-- Кнопка Delete -->
+                                        <a href="javascript:;" onclick="this.children[0].submit()" class="btn btn-sm btn-danger mx-1">
+                                            <form method="POST" action="/delete/{{ todo['_id'] }}"></form>
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                          {% else %}
+                              <div class="text-center"><strong>Please add some task.</strong></div>
+                          {% endif %}
+                      </div>
+                  </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
