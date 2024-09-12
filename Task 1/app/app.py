@@ -11,4 +11,6 @@ app.config['PORT']=os.environ.get('PORT')
 app.config['DEBUG'] = True
 
 if __name__ == '__main__':
-    app.run() # Start the Flask app
+    
+    port = int(os.environ.get("PORT", 3000))
+    app.run(host="0.0.0.0", port=port) # Start the Flask app

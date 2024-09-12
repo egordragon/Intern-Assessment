@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set environment variables
-        run: echo "PORT=8080" >> $GITHUB_ENV
 
       - name: Build and test with Docker Compose
         run: |
@@ -22,13 +20,10 @@ jobs:
           docker compose -f "Task 1/app/compose.yaml" run tests
 
   build-and-push:
-    needs: tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set environment variables
-        run: echo "PORT=8080" >> $GITHUB_ENV
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -63,8 +58,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set environment variables
-        run: echo "PORT=8080" >> $GITHUB_ENV
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
