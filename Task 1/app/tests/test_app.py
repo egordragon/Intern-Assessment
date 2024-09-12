@@ -3,9 +3,6 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from app.config.config import TestConfig
 from app.app import app
-from dotenv import load_dotenv
-import os
-load_dotenv()
 
 
 @pytest.fixture(scope='module')
@@ -16,7 +13,6 @@ def test_app():
     """
     app.config.from_object(TestConfig)  # Load the test configuration
     app.template_folder = 'tests/templates'  # Set the template folder for testing
-    app.config['PORT']=os.environ.get('PORT')
 
     # Initialize MongoDB client and drop collections for a clean test environment
     client = MongoClient(TestConfig.MONGO_URI)
