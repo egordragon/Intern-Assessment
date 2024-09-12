@@ -67,7 +67,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Deploy `mongo` service to Cloud Run
         run: |
