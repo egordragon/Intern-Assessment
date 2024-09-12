@@ -20,7 +20,8 @@ def init_routes(app):
         Route to display all tasks.
         Retrieves tasks from the database and renders them on the 'index.html' template.
         """
-        tasks = tasks_collection.find()  # Retrieve all tasks from the collection
+        #tasks = tasks_collection.find()  # Retrieve all tasks from the collection
+        tasks = None
         return render_template('index.html', tasks=tasks)  # Render tasks in the template
 
     @app.route('/', methods=['POST'])
