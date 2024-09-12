@@ -34,9 +34,6 @@ jobs:
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Authenticate Docker with GCP
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
@@ -71,14 +68,11 @@ jobs:
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Deploy `mongo` service to Cloud Run
         run: |
           gcloud run deploy todo-mongo \
-          --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-mongo-image:${{ github.sha }}" \
+          --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-mongo-image:latest" \
           --platform managed \
           --region ${{ secrets.REGION }} \
           --allow-unauthenticated \
@@ -87,7 +81,7 @@ jobs:
       - name: Deploy `app` service to Cloud Run
         run: |
           gcloud run deploy todo-app \
-            --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-app-image:${{ github.sha }}" \
+            --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-app-image:latest" \
             --platform managed \
             --region ${{ secrets.REGION }} \
             --allow-unauthenticated \
