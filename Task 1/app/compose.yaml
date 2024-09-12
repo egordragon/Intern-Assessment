@@ -22,6 +22,8 @@ services:
       context: . # Build the test environment from the same context as the app
     environment:
       PYTHONPATH: /app # Set the Python path to include the 'app' directory for module imports
+    ports:
+      - ${PORT}:${PORT}
     depends_on:
       - mongo # Ensure mongo starts before running tests
     command: pytest # Run pytest command to execute tests
