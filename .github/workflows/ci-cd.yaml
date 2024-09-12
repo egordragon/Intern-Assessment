@@ -44,7 +44,8 @@ jobs:
       - name: Build and push `app` service Docker image
         run: |
           docker compose -f "Task 1/app/compose.yaml" build app
-          docker tag app "${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-app-image:${{ github.sha }}"
+          IMAGE_ID=$(docker images --filter=reference='*app-app*' --format "{{.ID}}")
+          docker tag $IMAGE_ID "${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-app-image:${{ github.sha }}"
           docker push "${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-app-image:${{ github.sha }}"
 
       - name: Build and push `mongo` service Docker image
