@@ -18,7 +18,6 @@ jobs:
         run: |
           docker compose -f "Task 1/app/compose.yaml" build tests
           docker compose -f "Task 1/app/compose.yaml" run tests
-          # Job 1: Run Tests
 
   build-and-push:
     needs: tests
@@ -27,6 +26,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: google-github-actions/auth@v1 # google-github-actions/auth@v2
+
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
@@ -34,47 +37,47 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
 
       - name: Authenticate Docker with GCP
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push `app` service Docker image
         run: |
-          docker compose build app
-          docker tag app gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:${{ github.sha }}
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:${{ github.sha }}
+          docker compose -f "Task 1/app/compose.yaml" build app
+          docker tag app ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}/todo-app-image
+          docker push ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}/todo-app-image
 
       - name: Build and push `mongo` service Docker image
         run: |
           docker pull mongo:latest
-          docker tag mongo:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/mongo:${{ github.sha }}
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/mongo:${{ github.sha }}
+          docker tag mongo ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}/todo-mongo-image
+          docker push ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}/todo-mongo-image
 
-  # Job 3: Deploy to Google Cloud Run
-  deploy-app:
-    needs: [tests, build-and-push]
-    runs-on: ubuntu-latest
+  # # Job 3: Deploy to Google Cloud Run
+  # deploy-app:
+  #   needs: [tests, build-and-push]
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
+  #     - name: Set up Google Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@v1
+  #       with:
+  #         project_id: ${{ secrets.GCP_PROJECT_ID }}
+  #         service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Deploy `app` service to Cloud Run
-        run: |
-          gcloud run deploy todo-app \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:${{ github.sha }} \
-            --region us-central1 \
-            --platform managed \
-            --allow-unauthenticated
+  #     - name: Deploy `app` service to Cloud Run
+  #       run: |
+  #         gcloud run deploy todo-app \
+  #           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:${{ github.sha }} \
+  #           --region us-central1 \
+  #           --platform managed \
+  #           --allow-unauthenticated
 
-      - name: Deploy `mongo` service to Cloud Run (optional, якщо потрібно окремо)
-        run: |
-          gcloud run deploy todo-mongo \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/mongo:${{ github.sha }} \
-            --region us-central1 \
-            --platform managed \
-            --allow-unauthenticated
+  #     - name: Deploy `mongo` service to Cloud Run (optional, якщо потрібно окремо)
+  #       run: |
+  #         gcloud run deploy todo-mongo \
+  #           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/mongo:${{ github.sha }} \
+  #           --region us-central1 \
+  #           --platform managed \
+  #           --allow-unauthenticated
