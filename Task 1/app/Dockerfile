@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-ENV FLASK_ENV=development
+ENV FLASK_ENV=production
 
 RUN pip install  -r requirements.txt
 
