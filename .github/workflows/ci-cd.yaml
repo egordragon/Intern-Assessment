@@ -19,27 +19,14 @@ jobs:
           docker compose -f "Task 1/app/compose.yaml" build tests
           docker compose -f "Task 1/app/compose.yaml" run tests
           # Job 1: Run Tests
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Build and test with Docker Compose
-        run: |
-          docker compose -f "Task 1/app/compose.yaml" build app
-          docker compose -f "Task 1/app/compose.yaml" run app
-
-  deploy:
-    needs: [tests, build] # Only run if tests pass
-    runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
@@ -47,16 +34,45 @@ jobs:
       - name: Authenticate Docker with GCP
         run: gcloud auth configure-docker
 
-      - name: Build Docker image
-        run: docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:$GITHUB_SHA .
+      - name: Build and push `app` service Docker image
+        run: |
+          docker compose build app
+          docker tag app gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:${{ github.sha }}
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:${{ github.sha }}
 
-      - name: Push Docker image to Google Container Registry
-        run: docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:$GITHUB_SHA
+      - name: Build and push `mongo` service Docker image
+        run: |
+          docker pull mongo:latest
+          docker tag mongo:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/mongo:${{ github.sha }}
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/mongo:${{ github.sha }}
 
-      - name: Deploy to Cloud Run
+  # Job 3: Deploy to Google Cloud Run
+  deploy-app:
+    needs: [test-app, build-and-push] # Виконується тільки якщо успішно пройшли тести і build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Deploy `app` service to Cloud Run
         run: |
           gcloud run deploy todo-app \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:$GITHUB_SHA \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/todo-app:${{ github.sha }} \
+            --region us-central1 \
+            --platform managed \
+            --allow-unauthenticated
+
+      - name: Deploy `mongo` service to Cloud Run (optional, якщо потрібно окремо)
+        run: |
+          gcloud run deploy todo-mongo \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/mongo:${{ github.sha }} \
             --region us-central1 \
             --platform managed \
             --allow-unauthenticated
