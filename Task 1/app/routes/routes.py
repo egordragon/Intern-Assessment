@@ -3,14 +3,17 @@ from pymongo import MongoClient
 from config.config import Config
 from bson.objectid import ObjectId
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
 def init_routes(app):
     """
     Initialize the routes for the todo app.
     Connect to MongoDB and set up endpoints for managing tasks.
     """
-    client = MongoClient('mongodb://mongo:27017')  # Connect to the MongoDB instance using the configured URI
+    client = MongoClient(os.environ.get('MONGO_URI'))  # Connect to the MongoDB instance using the configured URI
     db = client['todo_db']  # Access the database
     tasks_collection = db['tasks']  # Access the 'tasks' collection where tasks will be stored
 
