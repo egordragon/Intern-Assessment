@@ -10,7 +10,7 @@ def init_routes(app):
     Initialize the routes for the todo app.
     Connect to MongoDB and set up endpoints for managing tasks.
     """
-    client = MongoClient(Config.MONGO_URI)  # Connect to the MongoDB instance using the configured URI
+    client = MongoClient('mongodb://mongo:27017')  # Connect to the MongoDB instance using the configured URI
     db = client['todo_db']  # Access the database
     tasks_collection = db['tasks']  # Access the 'tasks' collection where tasks will be stored
 
