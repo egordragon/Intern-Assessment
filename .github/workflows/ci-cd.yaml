@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - testing
 
 jobs:
   # Job 1: Run Tests
