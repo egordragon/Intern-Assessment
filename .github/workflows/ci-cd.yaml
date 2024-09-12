@@ -43,15 +43,14 @@ jobs:
 
       - name: Build and push `app` service Docker image
         run: |
-          docker compose -f "Task 1/app/compose.yaml" build app
-          docker tag app ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}/todo-app-image
-          docker push ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}/todo-app-image
+          docker compose -f "Task 1/app/compose.yaml" build app "${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-app-image:${{ github.sha }}" ./
+          docker push "${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPOSITORY}}/todo-app-image}:${{ github.sha }}"
 
       - name: Build and push `mongo` service Docker image
         run: |
           docker pull mongo:latest
-          docker tag mongo ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}/todo-mongo-image
-          docker push ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_PROJECT_ID }}/todo-mongo-image
+          docker tag mongo ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-mongo-image
+          docker push ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-mongo-image
 
   # # Job 3: Deploy to Google Cloud Run
   # deploy-app:
