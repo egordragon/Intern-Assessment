@@ -23,7 +23,6 @@ services:
       PYTHONPATH: /app # Set the Python path to include the 'app' directory for module imports
     depends_on:
       - mongo # Ensure mongo starts before running tests
-      - app # Ensure todo app is running before tests are executed
     command: pytest # Run pytest command to execute tests
 
 volumes:
