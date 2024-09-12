@@ -5,5 +5,5 @@ app = Flask(__name__,template_folder='templates')  #Initialize the Flask app and
 init_routes(app) # Initialize the app's routes
 
 if __name__ == '__main__':
-    port = 3000
-    app.run(host='0.0.0.0', port=port )# Start the Flask app
+    port = 8080
+    app.run(host='0.0.0.0', port=port ) # Start the Flask app
