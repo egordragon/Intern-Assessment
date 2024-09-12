@@ -22,4 +22,4 @@ jobs:
 
       - name: Build and test with Docker Compose
         run: |
-          docker compose -f compose.yaml --build tests
+          docker compose -f compose.yaml build tests
