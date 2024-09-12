@@ -6,8 +6,8 @@ COPY . .
 
 ENV FLASK_ENV=production
 
-RUN pip install  -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 3000
 
-CMD [ "python","app.py" ]
+CMD exec gunicorn --bind :$PORT app:app

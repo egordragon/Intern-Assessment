@@ -6,8 +6,9 @@ services:
       - mongo # Ensure the 'mongo' service is started before the 'app'
     environment:
       FLASK_ENV: production # Set Flask environment variable to 'production'
+    entrypoint: gunicorn -b :$PORT app:app
     ports:
-      - 8080:8080 # Map port 3000 on the host to port 3000 in the container
+      - $PORT:$PORT # Map port 3000 on the host to port 3000 in the container
 
   mongo:
     image: mongo:latest # Use the latest MongoDB image
