@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Set environment variables
-        run: echo "PORT=8080" >> $GITHUB_ENV
+        run: echo "PORT=3000" >> $GITHUB_ENV
 
       - name: Build and test with Docker Compose
         run: |
@@ -22,6 +22,7 @@ jobs:
           docker compose -f "Task 1/app/compose.yaml" run tests
 
   build-and-push:
+    needs: tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -31,7 +32,7 @@ jobs:
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
-        uses: google-github-actions/auth@v1 # google-github-actions/auth@v2
+        uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
@@ -39,7 +40,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authenticate Docker with GCP
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker "${{ secrets.REGION }}-docker.pkg.dev"
 
       - name: Build and push `app` service Docker image
         run: |
