@@ -57,8 +57,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set environment variables
-        run: echo "PORT=8080" >> $GITHUB_ENV
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -76,4 +74,4 @@ jobs:
             --platform managed \
             --region ${{ secrets.REGION }} \
             --allow-unauthenticated \
-            --port 8080
+            --port ${{ secrets.PORT }}
