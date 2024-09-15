@@ -28,7 +28,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Set environment variables
-        run: echo "PORT=8080" >> $GITHUB_ENV
+        run: echo "PORT=3000" >> $GITHUB_ENV
 
       - id: 'auth'
         name: 'Authenticate to Google Cloud'
@@ -49,12 +49,6 @@ jobs:
           docker tag $IMAGE_ID "${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-app-image:latest"
           docker push "${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-app-image:latest"
 
-      - name: Build and push `mongo` service Docker image
-        run: |
-          docker pull mongo:latest
-          docker tag mongo ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-mongo-image:latest
-          docker push ${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-mongo-image:latest
-
   # Job 3: Deploy to Google Cloud Run
   deploy-app:
     needs: build-and-push
@@ -74,15 +68,6 @@ jobs:
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
-
-      - name: Deploy `mongo` service to Cloud Run
-        run: |
-          gcloud run deploy todo-mongo \
-          --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPOSITORY }}/todo-mongo-image:latest" \
-          --platform managed \
-          --region ${{ secrets.REGION }} \
-          --allow-unauthenticated \
-          --port 27017
 
       - name: Deploy `app` service to Cloud Run
         run: |
