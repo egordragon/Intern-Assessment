@@ -6,8 +6,8 @@ COPY . .
 
 ENV FLASK_ENV=production
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-ENV PORT=3000
+EXPOSE 3000
 
-CMD exec python app.py
+CMD exec app python app.py

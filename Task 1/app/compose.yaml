@@ -7,7 +7,7 @@ services:
     environment:
       FLASK_ENV: production # Set Flask environment variable to 'production'
     ports:
-      - ${PORT}:${PORT} # Map port 3000 on the host to port 3000 in the container
+      - ${PORT}:${PORT} # Port mapping
 
   mongo:
     image: mongo:latest # Use the latest MongoDB image
